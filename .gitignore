@@ -1,0 +1,15 @@
+# Ignore Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Byte-compiled
+__pycache__/
+*.py[cod]
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Virtual environments
+.venv/
+venv/
+ENV/
