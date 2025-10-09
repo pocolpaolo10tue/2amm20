@@ -4,5 +4,5 @@ from transformers import pipeline
 detector = pipeline("text-classification", model="roberta-base-openai-detector")
 
 # Run inference on a sample text
-result = detector("This is a sample text to check if it is AI-generated.")
+result = detector("IA MA A ROBOT BEEP BOOP")
 print(result)
