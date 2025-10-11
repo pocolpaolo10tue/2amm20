@@ -28,8 +28,11 @@ def main():
     print("=== Running AI detector for answer to question with prompt ===")
     df = run_ai_detector(df, AI_DETECTOR_NAME, "answer_with_prompt")
     
+    print("=== Creating CSV output file ===")
+    df.to_csv('output.csv', index = False)
+    
     print("=== Finished ===")
-    # we need to store the df somewhere 
+    
 
 if __name__ == "__main__":
     main()
