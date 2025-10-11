@@ -29,6 +29,7 @@ def main():
     df = run_ai_detector(df, AI_DETECTOR_NAME, "answer_with_prompt")
     
     print("=== Finished ===")
+    # we need to store the df somewhere 
 
 if __name__ == "__main__":
     main()
