@@ -1,13 +1,22 @@
 import pandas as pd
+from llamainteract.llamapythonapi import LlamaInterface
 
-def generate_ai_answers(df, model_name, question_name):
+def generate_ai_answers(df, model_name, question_column):
     if model_name == "llama":
-        return run_llama(df, question_name)
+        return run_llama(df, question_column)
 
 
-def run_llama(df, question_name):
-    # need to generate the answer of the question of question_name and add it to df as question_name + "_answer"
-    
+def run_llama(df, question_column):
+    """
+        This function takes as input a dataframe df and a question_column (string).
+        The dataframe df contains a column with the name question_column. Each entry in this column is a question (string).
+        The function uses the Llama model to generate an answer each question in question_column.
+        The function returns the dataframe df with an additional column "answer" containing the generated answers.
+    """
+
+    llama = LlamaInterface()
+    df["answer"] = df[question_column].apply(lambda x: llama.qa(x))
+
     return df
 
 
