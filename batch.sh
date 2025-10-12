@@ -9,11 +9,18 @@
 #SBATCH --reservation=terv92681
 
 # Load CUDA module (adjust version to match your system)
-module load 2023
-module load CUDA/12.1.1
+deactivate
+rm -rf venv
 
-source venv/bin/activate  # activate your virtual environment
+module purge
+module load 2022
+module load Python/3.10.4-GCCcore-11.3.0
+
+python --version
+python -m venv venv
+
+source venv/bin/activate
 
 pip install --upgrade pip
-pip install --no-cache-dir -r requirements.txt
-python main.py
+pip install -r requirements.txt
+python main.py 
