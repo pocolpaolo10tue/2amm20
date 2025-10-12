@@ -1,4 +1,5 @@
 from binoculars import Binoculars
+from pathlib import Path
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, AutoModelForCausalLM
 import torch
 import pandas as pd
@@ -103,7 +104,11 @@ def run_detectgpt(df, answer_name):
 # --- Quick test block ---
 if __name__ == "__main__":
     # Load only the first two rows to avoid long runtime
-    df = pd.read_parquet("../datasets/eli5_QA.parquet").head(2)
+    base_dir = Path(__file__).resolve().parent.parent  # go up from modules/ to project root
+    data_path = base_dir / "datasets" / "eli5_QA.parquet"
+
+    # Load only the first 2 rows for testing
+    df = pd.read_parquet(data_path).head(2)
     print("Loaded DataFrame:")
     print(df)
 
