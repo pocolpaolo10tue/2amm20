@@ -119,8 +119,11 @@ if __name__ == "__main__":
 
     # Run each detector on its DataFrame
     df_bino = run_ai_detector("binoculars", df_bino, "answer")
+    print("Binoculars done")
     df_roberta = run_ai_detector("roberta", df_roberta, "answer")
+    print("Roberta done")
     df_detect = run_ai_detector("detectgpt", df_detect, "answer")
+    print("DetectGPt done")
 
     # Combine the results into a single DataFrame view
     combined = pd.DataFrame({
