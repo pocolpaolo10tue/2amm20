@@ -118,8 +118,8 @@ if __name__ == "__main__":
     df_detect = df.copy()
 
     # Run each detector on its DataFrame
-    df_bino = run_ai_detector("binoculars", df_bino, "answer")
-    print("Binoculars done")
+    #df_bino = run_ai_detector("binoculars", df_bino, "answer")
+    #print("Binoculars done")
     df_roberta = run_ai_detector("roberta", df_roberta, "answer")
     print("Roberta done")
     df_detect = run_ai_detector("detectgpt", df_detect, "answer")
@@ -129,8 +129,6 @@ if __name__ == "__main__":
     combined = pd.DataFrame({
         "question": df["question"],
         "answer": df["answer"],
-        "bino_score": df_bino["answer_ai_detection_score"],
-        "bino_pred": df_bino["answer_ai_detection_prediction"],
         "roberta_score": df_roberta["answer_ai_detection_score"],
         "roberta_pred": df_roberta["answer_ai_detection_prediction"],
         "detectgpt_score": df_detect["answer_ai_detection_score"],
