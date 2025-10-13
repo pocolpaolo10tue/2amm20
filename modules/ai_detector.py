@@ -21,7 +21,23 @@ def run_ai_detector(detector_name, df, answer_name):
 
 # --- Binoculars ---
 def run_binoculars(df, answer_name):
-    bino = Binoculars()
+    performer_model_name = "tiiuae/falcon-rw-1b"
+    reference_model_name = "tiiuae/falcon-rw-1b"
+
+    # Automatically map model to GPU in a memory-efficient way
+    performer_model = AutoModelForCausalLM.from_pretrained(
+        performer_model_name,
+        device_map="auto",        # automatically spread layers on available GPU(s)
+        torch_dtype=torch.float16,  # 16-bit precision reduces memory by ~2x
+        low_cpu_mem_usage=True
+    )
+
+    # Initialize Binoculars with these models
+    bino = Binoculars(
+        performer_model=performer_model,
+        performer_tokenizer=AutoTokenizer.from_pretrained(performer_model_name),
+        reference_model_name_or_path=reference_model_name
+    )
 
     scores, preds = [], []
     for text in df[answer_name]:
