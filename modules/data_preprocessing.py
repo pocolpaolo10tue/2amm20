@@ -3,7 +3,7 @@ import pandas as pd
 def load_datasets(dataset_name, prompt_name):
     """Load the question-answer and prompt datasets."""
     df = pd.read_parquet(f"datasets/{dataset_name}")
-    prompts = pd.read_csv(f"datasets/{prompt_name}", encoding="utf8")
+    prompts = pd.read_csv(f"datasets/{prompt_name}", encoding="ISO-8859-1")
     # prompts = pd.read_csv(f"datasets/{prompt_name}")
     
     df = data_cleaning(dataset_name, df)
