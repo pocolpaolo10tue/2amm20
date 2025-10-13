@@ -4,7 +4,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=1
-#SBATCH --time=3:00
+#SBATCH --time=15:00
 #SBATCH --partition=gpu_mig
 #SBATCH --reservation=terv92681
 
