@@ -5,7 +5,6 @@
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=1
 #SBATCH --time=30:00
-#SBATCH --reservation=terv92681
 
 # Load CUDA module (adjust version to match your system)
 deactivate
