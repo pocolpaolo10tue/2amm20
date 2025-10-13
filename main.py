@@ -9,9 +9,13 @@ PROMPT_FILE = "prompt.csv"
 AI_MODEL_NAME = "llama"
 AI_DETECTOR_NAME = "binoculars"
 
-def main():
+def main(sample_size=None):
     print("=== Loading data ===")
     df, prompt = load_datasets(DATASET_NAME,PROMPT_FILE)
+    
+    if sample_size:
+        # randomly pick some rows
+        df = df.sample(n=sample_size, random_state=69) # nice
 
     print("=== Generating AI answers ===")
     df = generate_ai_answers(df, AI_MODEL_NAME, "question")

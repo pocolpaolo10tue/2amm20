@@ -23,4 +23,4 @@ source venv/bin/activate
 
 pip install --upgrade pip
 pip install -r requirements.txt
-python main.py 
+python main.py --samples 2
