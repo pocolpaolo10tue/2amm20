@@ -3,11 +3,11 @@
 #SBATCH --output=%x_%j.out
 #SBATCH --nodes=1
 #SBATCH --gpus=1
-#SBATCH --cpus-per-task=8
-#SBATCH --mem-per-gpu=30G
+#SBATCH --cpus-per-task=4
 #SBATCH --partition=gpu_a100
 #SBATCH --time=00:10:00
 #SBATCH --reservation=terv92681
+#SBATCH --exclusive
 
 
 # Load CUDA module (adjust version to match your system)
