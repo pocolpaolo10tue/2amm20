@@ -1,12 +1,12 @@
 #!/bin/bash
 #SBATCH --job-name=run-experiments
 #SBATCH --output=%x_%j.out
-#SBATCH --partition=gpu_a100
 #SBATCH --nodes=1
 #SBATCH --gpus=1
 #SBATCH --cpus-per-task=8
-#SBATCH --mem-per-gpu=60G
-#SBATCH --time=02:00:00
+#SBATCH --mem-per-gpu=30G
+#SBATCH --partition=gpu_a100
+#SBATCH --time=00:10:00
 #SBATCH --reservation=terv92681
 
 
