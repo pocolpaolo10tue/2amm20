@@ -21,7 +21,7 @@ def main():
     df = generate_ai_answers(df, AI_MODEL_NAME, "question")
     
     print("=== Running AI detector ===")
-    df = run_ai_detector(df, AI_DETECTOR_NAME, "answer")
+    df = run_ai_detector(AI_DETECTOR_NAME, df, "answer")
 
     print("=== Creating Question with Prompt ===")
     df = create_question_with_prompt(df, prompt)
@@ -30,7 +30,7 @@ def main():
     df = generate_ai_answers(df, AI_MODEL_NAME, "question_with_prompt")
     
     print("=== Running AI detector for answer to question with prompt ===")
-    df = run_ai_detector(df, AI_DETECTOR_NAME, "answer_with_prompt")
+    df = run_ai_detector(AI_DETECTOR_NAME, df, "answer_with_prompt")
     
     print("=== Creating CSV output file ===")
     df.to_csv('output.csv', index = False)
