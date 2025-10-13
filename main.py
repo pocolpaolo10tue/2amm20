@@ -7,7 +7,7 @@ DATASET_NAME = "writingprompts_QA.parquet"
 PROMPT_FILE = "prompt.csv"
 
 AI_MODEL_NAME = "llama"
-AI_DETECTOR_NAME = "binoculars"
+AI_DETECTOR_NAME = "roberta"
 
 def main():
     print("=== Loading data ===")
