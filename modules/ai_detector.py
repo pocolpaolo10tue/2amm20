@@ -5,6 +5,13 @@ import torch
 import pandas as pd
 import numpy as np
 
+# Global model/ tokenizer cache
+MODEL_CACHE = {}
+DEVICE = "cuda" if torch.cuda.is_available() else (
+    "mps" if torch.backends.mps.is_available() else "cpu"
+)
+torch.set_grad_enabled(False)
+
 
 # --- Dispatcher ---
 def run_ai_detector(detector_name, df, answer_name):
@@ -24,20 +31,27 @@ def run_binoculars(df, answer_name):
     performer_model_name = "tiiuae/falcon-rw-1b"
     reference_model_name = "tiiuae/falcon-rw-1b"
 
-    # Automatically map model to GPU in a memory-efficient way
-    performer_model = AutoModelForCausalLM.from_pretrained(
-        performer_model_name,
-        device_map="auto",        # automatically spread layers on available GPU(s)
-        torch_dtype=torch.float16,  # 16-bit precision reduces memory by ~2x
-        low_cpu_mem_usage=True
-    )
-
-    # Initialize Binoculars with these models
-    bino = Binoculars(
-        performer_model=performer_model,
-        performer_tokenizer=AutoTokenizer.from_pretrained(performer_model_name),
-        reference_model_name_or_path=reference_model_name
-    )
+    if "binoculars" not in MODEL_CACHE:
+        print(f"[Binoculars] Loading models on {DEVICE}...")
+        # Automatically map model to GPU in a memory-efficient way
+        performer_model = AutoModelForCausalLM.from_pretrained(
+            performer_model_name,
+            device_map="auto",        # automatically spread layers on available GPU(s)
+            torch_dtype=torch.float16,  # 16-bit precision reduces memory by ~2x
+            low_cpu_mem_usage=True
+        )
+        
+        tokenizer = AutoTokenizer.from_pretrained(performer_model_name)
+         
+        # Initialize Binoculars with these models
+        bino = Binoculars(
+            performer_model=performer_model,
+            performer_tokenizer=tokenizer,
+            reference_model_name_or_path=reference_model_name
+        )
+        MODEL_CACHE["binoculars"] = bino
+    else:
+        bino = MODEL_CACHE["binoculars"]
 
     scores, preds = [], []
     for text in df[answer_name]:
@@ -50,49 +64,64 @@ def run_binoculars(df, answer_name):
 
 
 # --- RoBERTa ---
-def run_roberta(df, answer_name):
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+def run_roberta(df, answer_name,batch_size=16):
+    if "roberta" not in MODEL_CACHE:
+        print(f"[RoBERTa] Using device: {DEVICE}")
+        model_name = "roberta-base-openai-detector"
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForSequenceClassification.from_pretrained(model_name).to(DEVICE)
+        model.eval()
+        MODEL_CACHE['roberta'] = (model, tokenizer)
+    
+    model, tokenizer = MODEL_CACHE["roberta"]
 
-    print(f"[RoBERTa] Using device: {device}")
-    model_name = "roberta-base-openai-detector"
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForSequenceClassification.from_pretrained(model_name).to(device)
-
+    texts = [t for t in df[answer_name] if isinstance(t, str)]
     scores, preds = [], []
-    for text in df[answer_name]:
-        if not isinstance(text, str):
-            print(text)
-            continue
-        inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=512).to(device)
+
+    for i in range(0, len(texts), batch_size):
+        batch = texts[i : i + batch_size]
+        inputs = tokenizer(
+            batch,
+            return_tensors="pt",
+            truncation=True,
+            max_length=512,
+            padding=True,
+        ).to(DEVICE)
 
         with torch.no_grad():
             outputs = model(**inputs)
-            probs = torch.softmax(outputs.logits, dim=-1)
-            ai_prob = probs[0][1].item()
-            pred = "AI-generated" if ai_prob > 0.5 else "Human-written"
-        scores.append(ai_prob)
-        preds.append(pred)
+            probs = torch.softmax(outputs.logits, dim=-1)[:, 1].detach().cpu().numpy()
 
-    df[answer_name + "_detection_score"] = scores
-    df[answer_name + "_detection_prediction"] = preds
+        scores.extend(probs.tolist())
+        preds.extend(["AI-generated" if p > 0.5 else "Human-written" for p in probs])
+
+    df[f"{answer_name}_detection_score"] = scores
+    df[f"{answer_name}_detection_prediction"] = preds
     return df
 
 
 # --- DetectGPT ---
 def run_detectgpt(df, answer_name):
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"[DetectGPT] Using device: {device}")
+    if "detectgpt" not in MODEL_CACHE:
+        print(f"[DetectGPT] Using device: {DEVICE}")
+        model_name = "gpt2"
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForCausalLM.from_pretrained(model_name).to(DEVICE)
+        model.eval()
+        MODEL_CACHE['detectgpt'] = (model, tokenizer)
+        
+    model, tokenizer = MODEL_CACHE["detectgpt"]
 
-    # we’ll use GPT-2 for log-probability estimation
-    model_name = "gpt2"
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForCausalLM.from_pretrained(model_name).to(device)
+    
 
     scores, preds = [], []
 
     for text in df[answer_name]:
+        if not isinstance(text, str):
+            continue
+        
         # tokenize
-        inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=512).to(device)
+        inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=512).to(DEVICE)
         with torch.no_grad():
             # original log probability
             outputs = model(**inputs, labels=inputs["input_ids"])
@@ -104,7 +133,7 @@ def run_detectgpt(df, answer_name):
             words[len(words)//2] = "the"  # simple perturbation
         perturbed = " ".join(words)
 
-        inputs_pert = tokenizer(perturbed, return_tensors="pt", truncation=True, max_length=512).to(device)
+        inputs_pert = tokenizer(perturbed, return_tensors="pt", truncation=True, max_length=512).to(DEVICE)
         with torch.no_grad():
             outputs_pert = model(**inputs_pert, labels=inputs_pert["input_ids"])
             logp_pert = -outputs_pert.loss.item()
@@ -121,39 +150,39 @@ def run_detectgpt(df, answer_name):
     return df
 
 
-# --- Quick test block ---
-if __name__ == "__main__":
-    # Load only the first two rows to avoid long runtime
-    base_dir = Path(__file__).resolve().parent.parent  # go up from modules/ to project root
-    data_path = base_dir / "datasets" / "eli5_QA.parquet"
+# # --- Quick test block ---
+# if __name__ == "__main__":
+#     # Load only the first two rows to avoid long runtime
+#     base_dir = Path(__file__).resolve().parent.parent  # go up from modules/ to project root
+#     data_path = base_dir / "datasets" / "eli5_QA.parquet"
 
-    # Load only the first 2 rows for testing
-    df = pd.read_parquet(data_path).head(2)
-    print("Loaded DataFrame:")
-    print(df)
+#     # Load only the first 2 rows for testing
+#     df = pd.read_parquet(data_path).head(2)
+#     print("Loaded DataFrame:")
+#     print(df)
 
-    # Make copies so each detector doesn’t overwrite columns
-    df_bino = df.copy()
-    df_roberta = df.copy()
-    df_detect = df.copy()
+#     # Make copies so each detector doesn’t overwrite columns
+#     df_bino = df.copy()
+#     df_roberta = df.copy()
+#     df_detect = df.copy()
 
-    # Run each detector on its DataFrame
-    #df_bino = run_ai_detector("binoculars", df_bino, "answer")
-    #print("Binoculars done")
-    df_roberta = run_ai_detector("roberta", df_roberta, "answer")
-    print("Roberta done")
-    df_detect = run_ai_detector("detectgpt", df_detect, "answer")
-    print("DetectGPt done")
+#     # Run each detector on its DataFrame
+#     #df_bino = run_ai_detector("binoculars", df_bino, "answer")
+#     #print("Binoculars done")
+#     df_roberta = run_ai_detector("roberta", df_roberta, "answer")
+#     print("Roberta done")
+#     df_detect = run_ai_detector("detectgpt", df_detect, "answer")
+#     print("DetectGPt done")
 
-    # Combine the results into a single DataFrame view
-    combined = pd.DataFrame({
-        "question": df["question"],
-        "answer": df["answer"],
-        "roberta_score": df_roberta["answer_ai_detection_score"],
-        "roberta_pred": df_roberta["answer_ai_detection_prediction"],
-        "detectgpt_score": df_detect["answer_ai_detection_score"],
-        "detectgpt_pred": df_detect["answer_ai_detection_prediction"],
-    })
+#     # Combine the results into a single DataFrame view
+#     combined = pd.DataFrame({
+#         "question": df["question"],
+#         "answer": df["answer"],
+#         "roberta_score": df_roberta["answer_ai_detection_score"],
+#         "roberta_pred": df_roberta["answer_ai_detection_prediction"],
+#         "detectgpt_score": df_detect["answer_ai_detection_score"],
+#         "detectgpt_pred": df_detect["answer_ai_detection_prediction"],
+#     })
 
-    print("\n=== Combined Detection Results ===")
-    print(combined)
+#     print("\n=== Combined Detection Results ===")
+#     print(combined)
