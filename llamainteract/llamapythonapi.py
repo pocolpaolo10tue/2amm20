@@ -8,19 +8,18 @@ class LlamaInterface:
                 ):
         """Initialize the Llama model interface."""
         if torch.cuda.is_available():
-            print("llama uses GPU")
             device = "cuda"
         else:
-            print("llama uses CPU")
             device = "cpu"
          
-            
         self.llm = Llama.from_pretrained(
             repo_id=repo_id,
             filename=filename,
             device=device,
             verbose=False
         )
+        
+        print(f"[LlamaInterface] Model loaded. Actual device: {self.llm.device}")
     
     def prompt(self, text, max_tokens=128, stop=None, echo=False):
         """Generate a response to a text prompt."""
