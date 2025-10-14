@@ -4,7 +4,9 @@ import inspect
 
 def generate_ai_answers(df, model_name, question_column):
     if model_name == "llama":
-        return run_llama(df, question_column)
+        df[question_column + "_answer_ai"] = len(df[question_column]) * ['very fast, not an API']
+        
+        # return run_llama(df, question_column)
 
 
 def run_llama(df, question_column):
