@@ -60,7 +60,11 @@ def run_roberta(df, answer_name):
 
     scores, preds = [], []
     for text in df[answer_name]:
+        if not isinstance(text, str):
+            print(text)
+            continue
         inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=512).to(device)
+
         with torch.no_grad():
             outputs = model(**inputs)
             probs = torch.softmax(outputs.logits, dim=-1)
