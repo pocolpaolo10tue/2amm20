@@ -15,8 +15,10 @@ def run_llama(df, question_column):
     """
 
     llama = LlamaInterface()
-    df[question_column + "_answer"] = df[question_column].apply(lambda x: llama.qa(x))
-
+    df[question_column + "_answer"] = df[question_column].apply(
+        lambda x: llama.qa(x)["choices"][0]["text"].strip()
+    )
+    
     return df
 
 
