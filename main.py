@@ -1,5 +1,5 @@
 import pandas as pd
-from modules.data_preprocessing import load_datasets, create_question_with_prompt
+from modules.data_preprocessing import load_datasets, create_question_with_prompt, clean_dataset
 from modules.ai_prompting import generate_ai_answers
 from modules.ai_detector import run_ai_detector
 
@@ -9,13 +9,15 @@ PROMPT_FILE = "prompt.csv"
 AI_MODEL_NAME = "llama"
 AI_DETECTOR_NAME = "roberta"
 
+NUMBER_OF_QUESTIONS = 100
+MIN_LENGTH_ANSWER = 200
+
 def main():
     print("=== Loading data ===")
     df, prompt = load_datasets(DATASET_NAME,PROMPT_FILE)
-    
-    if True:
-        # randomly pick some rows
-        df = df.sample(n=2, random_state=69) # nice
+   
+    print("=== Clean and limit the dataset ===")
+    df = clean_dataset(df, NUMBER_OF_QUESTIONS, MIN_LENGTH_ANSWER)
 
     print("=== Generating AI answers ===")
     df = generate_ai_answers(df, AI_MODEL_NAME, "question")
