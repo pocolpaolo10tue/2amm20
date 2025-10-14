@@ -7,7 +7,7 @@ class LlamaInterface:
     def __init__(self,
                  repo_id="lmstudio-community/Llama-3.3-70B-Instruct-GGUF", 
                  filename="Llama-3.3-70B-Instruct-Q4_K_M.gguf",
-                 n_gpu_layers=None,
+                 n_gpu_layers=-1,
                  n_threads=None
                 ):
         """Initialize the Llama model interface with diagnostics."""
