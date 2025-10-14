@@ -20,10 +20,10 @@ def main():
     print("=== Generating AI answers ===")
     df = generate_ai_answers(df, AI_MODEL_NAME, "question")
     
-    print("=== Running AI detector ===")
+    print("=== Running AI detector on human text ===")
     df = run_ai_detector(AI_DETECTOR_NAME, df, "answer")
     
-    print("=== Running AI detector ===")
+    print("=== Running AI detector on AI generated text ===")
     df = run_ai_detector(AI_DETECTOR_NAME, df, "question_answer_ai")
 
     print("=== Creating Question with Prompt ===")
