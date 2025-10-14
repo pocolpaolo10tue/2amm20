@@ -1,4 +1,5 @@
 from llama_cpp import Llama
+import torch
 
 class LlamaInterface:
     def __init__(self,
@@ -6,9 +7,18 @@ class LlamaInterface:
                  filename="Llama-3.3-70B-Instruct-Q4_K_M.gguf"
                 ):
         """Initialize the Llama model interface."""
+        if torch.cuda.is_available():
+            print("llama uses GPU")
+            device = "cuda"
+        else:
+            print("llama uses CPU")
+            device = "cpu"
+         
+            
         self.llm = Llama.from_pretrained(
             repo_id=repo_id,
             filename=filename,
+            device=device,
             verbose=False
         )
     
