@@ -44,8 +44,8 @@ def run_binoculars(df, answer_name):
         scores.append(bino.compute_score(text))
         preds.append(bino.predict(text))
 
-    df[answer_name + "_ai_detection_score"] = scores
-    df[answer_name + "_ai_detection_prediction"] = preds
+    df[answer_name + "_detection_score"] = scores
+    df[answer_name + "_detection_prediction"] = preds
     return df
 
 
