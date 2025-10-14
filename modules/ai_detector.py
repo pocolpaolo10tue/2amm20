@@ -73,8 +73,8 @@ def run_roberta(df, answer_name):
         scores.append(ai_prob)
         preds.append(pred)
 
-    df[answer_name + "_ai_detection_score"] = scores
-    df[answer_name + "_ai_detection_prediction"] = preds
+    df[answer_name + "_detection_score"] = scores
+    df[answer_name + "_detection_prediction"] = preds
     return df
 
 
@@ -116,8 +116,8 @@ def run_detectgpt(df, answer_name):
         scores.append(score)
         preds.append(pred)
 
-    df[answer_name + "_ai_detection_score"] = scores
-    df[answer_name + "_ai_detection_prediction"] = preds
+    df[answer_name + "_detection_score"] = scores
+    df[answer_name + "_detection_prediction"] = preds
     return df
 
 
