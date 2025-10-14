@@ -17,7 +17,7 @@ def run_llama(df, question_column):
 
     llama = LlamaInterface()
     print('FLorian Output code:::')
-    print(print(llama._class.module_))
+    print(llama.__class__.__module__)
     print(inspect.getsource(LlamaInterface))
     df[question_column + "_answer_ai"] = df[question_column].apply(
         lambda x: llama.qa(x)["choices"][0]["text"].strip()
