@@ -8,9 +8,6 @@
 #SBATCH --time=03:00:00
 #SBATCH --exclusive
 
-
-# Load CUDA module (adjust version to match your system)
-deactivate
 rm -rf venv
 
 module purge

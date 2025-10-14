@@ -8,8 +8,6 @@
 #SBATCH --partition=gpu_mig
 #SBATCH --reservation=terv92681
 
-# Load CUDA module (adjust version to match your system)
-deactivate
 rm -rf venv
 
 module purge
