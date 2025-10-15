@@ -3,10 +3,9 @@
 #SBATCH --output=%x_%j.out
 #SBATCH --nodes=1
 #SBATCH --gpus=1
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=8
 #SBATCH --partition=gpu_a100
 #SBATCH --time=00:30:00
-#SBATCH --exclusive
 
 module load 2023
 module load foss/2023a
@@ -16,7 +15,5 @@ which nvcc
 nvcc --version
 
 source venv/bin/activate
-CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python --force-reinstall --no-cache-dir
-
 python main.py
 deactivate

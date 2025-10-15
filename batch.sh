@@ -2,10 +2,9 @@
 #SBATCH --job-name=run-experiments
 #SBATCH --output=%x_%j.out
 #SBATCH --nodes=1
-#SBATCH --gpus=1
-#SBATCH --cpus-per-task=1
-#SBATCH --partition=gpu_a100
-#SBATCH --time=00:30:00
+#SBATCH --gpus=2
+#SBATCH --cpus-per-task=8
+#SBATCH --time=03:00:00
 #SBATCH --partition=gpu_mig
 #SBATCH --reservation=terv92681
 
@@ -17,7 +16,5 @@ which nvcc
 nvcc --version
 
 source venv/bin/activate
-CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python --force-reinstall --no-cache-dir
-
 python main.py
 deactivate
