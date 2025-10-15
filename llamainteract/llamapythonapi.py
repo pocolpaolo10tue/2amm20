@@ -6,7 +6,7 @@ import multiprocessing as mp
 class LlamaInterface:
     def __init__(self,
                  repo_id="lmstudio-community/Llama-3.3-70B-Instruct-GGUF",
-                 filename="Llama-3.3-70B-Instruct-Q2_K_M.gguf",
+                 filename="Llama-3.3-70B-Instruct-Q3_K_M.gguf",
                  n_gpu_layers=-1,
                  n_batch=512):
         """Initialize Llama model for local inference (Python 3.9-safe)."""
