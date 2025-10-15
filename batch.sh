@@ -1,24 +1,23 @@
 #!/bin/bash
 #SBATCH --job-name=run-experiments
 #SBATCH --output=%x_%j.out
-#SBATCH --ntasks-per-node=1
 #SBATCH --nodes=1
-#SBATCH --gpus-per-node=1
-#SBATCH --time=15:00
+#SBATCH --gpus=1
+#SBATCH --cpus-per-task=1
+#SBATCH --partition=gpu_a100
+#SBATCH --time=00:30:00
 #SBATCH --partition=gpu_mig
 #SBATCH --reservation=terv92681
 
-rm -rf venv
+module load 2023
+module load foss/2023a
+module load CUDA/12.1.1
 
-module purge
-module load 2022
-module load Python/3.10.4-GCCcore-11.3.0
-
-python --version
-python -m venv venv
+which nvcc
+nvcc --version
 
 source venv/bin/activate
+CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python --force-reinstall --no-cache-dir
 
-pip install --upgrade pip
-pip install -r requirements.txt
 python main.py
+deactivate
