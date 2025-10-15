@@ -16,7 +16,5 @@ source venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 
-python -c "import llama_cpp; print('llama_cpp loaded')"
-
 python main.py
 deactivate
