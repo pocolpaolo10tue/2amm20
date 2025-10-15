@@ -8,7 +8,7 @@ DATASET_NAME = "writingprompts_QA.parquet"
 PROMPT_FILE = "prompt.csv"
 
 AI_MODEL_NAME = "llama"
-AI_DETECTOR_NAME = "detectgpt"
+AI_DETECTOR_NAME = "binoculars"
 
 NUMBER_OF_QUESTIONS = 1
 MIN_LENGTH_ANSWER = 200
