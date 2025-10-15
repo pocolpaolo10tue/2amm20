@@ -32,31 +32,20 @@ class LlamaInterface:
             echo=False,
         )
 
-    def batch_qa(self, questions, max_tokens=64, max_workers=8):
-        """
-        Threaded batching for Python 3.9 environments.
-        Compatible with llama_cpp<=0.3.16.
-        """
+    def batch_qa(self, questions, max_tokens=64):
+        """Process a list of questions sequentially (ordered results)."""
         prompts = [f"Q: {q} A: " for q in questions]
         results = []
-        with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            futures = {
-                executor.submit(
-                    self.llm.create_completion,
-                    prompt=p,
-                    max_tokens=max_tokens,
-                    stop=["Q:", "\n"],
-                    echo=False
-                ): p
-                for p in prompts
-            }
-            for fut in as_completed(futures):
-                try:
-                    results.append(fut.result())
-                except Exception as e:
-                    results.append({"choices": [{"text": f"[ERROR: {e}]"}]})
-        # preserve ordering (optional)
-        results.sort(key=lambda x: prompts.index(futures.get(x, "")))
+
+        for prompt in prompts:
+            result = self.llm.create_completion(
+                prompt,
+                max_tokens=max_tokens,
+                stop=["Q:", "\n"],
+                echo=False
+            )
+            results.append(result)
+
         return results
 
     def prompt(self, text, max_tokens=128, stop=None, echo=False):
@@ -67,3 +56,10 @@ class LlamaInterface:
         """Ask a question and get an answer."""
         prompt = f"Q: {question} A: "
         return self.llm(prompt, max_tokens=max_tokens, stop=["Q:", "\n"], echo=False)
+    
+if __name__ == "__main__":
+    llama = LlamaInterface()
+    questions = ["What is the capital of France?", "Name the largest planet."]
+    answers = llama.batch_qa(questions)
+    for ans in answers:
+        print(ans["choices"][0]["text"].strip())
