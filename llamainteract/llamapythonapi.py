@@ -3,7 +3,7 @@ from llama_cpp import Llama
 class LlamaInterface:
     def __init__(self,
                  repo_id="lmstudio-community/Llama-3.3-70B-Instruct-GGUF", 
-                 filename="Llama-3.3-70B-Instruct-Q4_K_M.gguf"
+                 filename="Llama-3.3-70B-Instruct-Q3_K_M.gguf"
                 ):
         """Initialize the Llama model interface."""
         self.llm = Llama.from_pretrained(
