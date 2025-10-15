@@ -10,7 +10,7 @@ PROMPT_FILE = "prompt.csv"
 AI_MODEL_NAME = "llama"
 AI_DETECTOR_NAME = "roberta"
 
-NUMBER_OF_QUESTIONS = 1
+NUMBER_OF_QUESTIONS = 100
 MIN_LENGTH_ANSWER = 200
 
 def main():
