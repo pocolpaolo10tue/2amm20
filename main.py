@@ -8,9 +8,9 @@ DATASET_NAME = "writingprompts_QA.parquet"
 PROMPT_FILE = "prompt.csv"
 
 AI_MODEL_NAME = "llama"
-AI_DETECTOR_NAME = "roberta"
+AI_DETECTOR_NAME = "detectgpt"
 
-NUMBER_OF_QUESTIONS = 100
+NUMBER_OF_QUESTIONS = 1
 MIN_LENGTH_ANSWER = 200
 
 def main():
