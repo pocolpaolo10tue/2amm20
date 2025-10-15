@@ -2,6 +2,7 @@ import pandas as pd
 from modules.data_preprocessing import load_datasets, create_question_with_prompt, clean_dataset
 from modules.ai_prompting import generate_ai_answers
 from modules.ai_detector import run_ai_detector
+import multiprocessing as mp
 
 DATASET_NAME = "writingprompts_QA.parquet"
 PROMPT_FILE = "prompt.csv"
@@ -13,6 +14,8 @@ NUMBER_OF_QUESTIONS = 1
 MIN_LENGTH_ANSWER = 200
 
 def main():
+    mp.set_start_method("spawn", force=True)
+    
     print("=== Loading data ===")
     df, prompt = load_datasets(DATASET_NAME,PROMPT_FILE)
    
