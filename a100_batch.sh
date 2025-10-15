@@ -11,9 +11,12 @@ module load 2023
 module load foss/2023a
 module load CUDA/12.1.1
 
-which nvcc
-nvcc --version
-
+rm -rf venv
+python -m venv venv
 source venv/bin/activate
+
+pip install --upgrade pip
+pip install -r requirements.txt
+
 python main.py
 deactivate
