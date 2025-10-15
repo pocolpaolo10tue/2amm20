@@ -26,10 +26,19 @@ class LlamaInterface:
         return self.llm(text, max_tokens=max_tokens, stop=stop, echo=echo)
     
     def batch_qa(self, questions, max_tokens=64):
-        """Process a list of questions in a batch."""
+        """Efficiently process a list of questions using llama.cpp's batch API."""
         prompts = [f"Q: {q} A: " for q in questions]
-        return self.llm(prompts, max_tokens=max_tokens, stop=["Q:", "\n"], echo=False)
-    
+
+        # Run a batched completion
+        results = self.llm.create_completion_batch(
+            [{"prompt": p} for p in prompts],
+            max_tokens=max_tokens,
+            stop=["Q:", "\n"],
+            echo=False,
+        )
+
+        return results
+
     def qa(self, question, max_tokens=64):
         """Ask a question and get an answer."""
         prompt = f"Q: {question} A: "
