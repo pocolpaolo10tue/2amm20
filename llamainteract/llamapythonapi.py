@@ -19,7 +19,7 @@ class LlamaInterface:
             verbose=False
         )
         
-        print(f"[LlamaInterface] Model loaded. Actual device: {self.llm.device}")
+        # print(f"[LlamaInterface] Model loaded. Actual device: {self.llm.device}")
     
     def prompt(self, text, max_tokens=128, stop=None, echo=False):
         """Generate a response to a text prompt."""
