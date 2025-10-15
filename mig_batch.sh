@@ -12,8 +12,6 @@ module load 2023
 module load foss/2023a
 module load CUDA/12.1.1
 
-rm -rf venv
-python -m venv venv
 source venv/bin/activate
 
 pip install --upgrade pip
