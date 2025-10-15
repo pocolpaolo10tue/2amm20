@@ -33,15 +33,23 @@ class LlamaInterface:
         )
 
     def batch_qa(self, questions, max_tokens=64):
-        prompts = [f"Q: {q} A: " for q in questions]
-        results = self.llm.create_completion(
-            prompt=prompts,
-            max_tokens=max_tokens,
-            stop=["Q:", "\n"],
-            echo=False
-        )
-        return results
+        """
+        Sequentially or threaded batch processing compatible with llama_cpp==0.3.16.
+        Each prompt is processed individually.
+        """
+        results = []
 
+        for question in questions:
+            prompt = f"Q: {question} A: "
+            result = self.llm.create_completion(
+                prompt,
+                max_tokens=max_tokens,
+                stop=["Q:", "\n"],
+                echo=False
+            )
+            results.append(result)
+
+        return results
 
     def prompt(self, text, max_tokens=128, stop=None, echo=False):
         """Generate a response to a text prompt."""
