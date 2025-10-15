@@ -2,6 +2,7 @@ import pandas as pd
 import multiprocessing as mp
 from llamainteract.llamapythonapi import LlamaInterface
 import os
+import time
 
 def generate_ai_answers(df, model_name, question_column, n_workers=None, chunk_size=256):
     if n_workers is None:
@@ -11,15 +12,28 @@ def generate_ai_answers(df, model_name, question_column, n_workers=None, chunk_s
     else:
         raise ValueError(f"Unsupported model_name: {model_name}")
 
-
-
 def worker_fn(questions_chunk):
     """
     Worker process: initializes its own LlamaInterface and answers a chunk.
     Each worker runs in its own process (isolated from others).
     """
+    start_total = time.time()
+    
+    # Measure model instantiation
+    start_init = time.time()
     llama = LlamaInterface()
+    end_init = time.time()
+    print(f"[Worker] LlamaInterface initialization took {end_init - start_init:.2f} seconds")
+
+    # Measure batch inference
+    start_infer = time.time()
     answers = llama.batch_qa(questions_chunk)
+    end_infer = time.time()
+    print(f"[Worker] batch_qa on {len(questions_chunk)} questions took {end_infer - start_infer:.2f} seconds")
+
+    end_total = time.time()
+    print(f"[Worker] Total worker time: {end_total - start_total:.2f} seconds")
+
     return answers
 
 
