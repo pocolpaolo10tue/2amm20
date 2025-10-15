@@ -41,7 +41,7 @@ def main():
     df = run_ai_detector(AI_DETECTOR_NAME, df, "question_with_prompt_answer_ai")
     
     print("=== Creating CSV output file ===")
-    df.to_csv('output.csv', index = False)
+    df.to_csv(f"output_{NUMBER_OF_QUESTIONS}_{AI_DETECTOR_NAME}.csv", index = False)
     
     print("=== Finished ===")
     

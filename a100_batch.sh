@@ -3,10 +3,9 @@
 #SBATCH --output=%x_%j.out
 #SBATCH --nodes=1
 #SBATCH --gpus=1
-#SBATCH --cpus-per-task=3
-#SBATCH --time=03:00:00
-#SBATCH --partition=gpu_mig
-#SBATCH --reservation=terv92681
+#SBATCH --cpus-per-task=8
+#SBATCH --partition=gpu_a100
+#SBATCH --time=00:30:00
 
 module load 2023
 module load foss/2023a
