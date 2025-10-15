@@ -7,6 +7,8 @@ import time
 def generate_ai_answers(df, model_name, question_column, n_workers=None, chunk_size=256):
     if n_workers is None:
         n_workers = int(os.environ.get("SLURM_CPUS_PER_TASK", 4))
+    
+    print(n_workers)
     if model_name == "llama":
         return run_llama(df, question_column, n_workers=n_workers, chunk_size=chunk_size)
     else:
