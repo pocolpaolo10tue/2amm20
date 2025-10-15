@@ -25,6 +25,11 @@ class LlamaInterface:
         """Generate a response to a text prompt."""
         return self.llm(text, max_tokens=max_tokens, stop=stop, echo=echo)
     
+    def batch_qa(self, questions, max_tokens=64):
+        """Process a list of questions in a batch."""
+        prompts = [f"Q: {q} A: " for q in questions]
+        return self.llm(prompts, max_tokens=max_tokens, stop=["Q:", "\n"], echo=False)
+    
     def qa(self, question, max_tokens=64):
         """Ask a question and get an answer."""
         prompt = f"Q: {question} A: "
