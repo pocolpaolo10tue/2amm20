@@ -8,7 +8,7 @@ def generate_ai_answers(df, model_name, question_column, n_workers=None, chunk_s
     if n_workers is None:
         n_workers = int(os.environ.get("SLURM_CPUS_PER_TASK", 4))
     
-    print(n_workers)
+    print(f"Number of workers: {n_workers}")
     if model_name == "llama":
         return run_llama(df, question_column, n_workers=n_workers, chunk_size=chunk_size)
     else:
@@ -24,6 +24,7 @@ def worker_fn(questions_chunk):
     # Measure model instantiation
     start_init = time.time()
     llama = LlamaInterface()
+   
     end_init = time.time()
     print(f"[Worker] LlamaInterface initialization took {end_init - start_init:.2f} seconds")
 

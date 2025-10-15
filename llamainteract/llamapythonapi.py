@@ -22,7 +22,8 @@ class LlamaInterface:
             use_mlock=True,
             verbose=False,
         )
-
+        print("Device:", self.llm)
+        
     def qa(self, question, max_tokens=64):
         prompt = f"Q: {question} A: "
         return self.llm.create_completion(

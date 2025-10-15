@@ -8,6 +8,15 @@
 #SBATCH --time=00:30:00
 #SBATCH --exclusive
 
+module load 2023
+module load foss/2023a
+module load CUDA/12.1.1
+
+which nvcc
+nvcc --version
+
 source venv/bin/activate
+CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python --force-reinstall --no-cache-dir
+
 python main.py
 deactivate
