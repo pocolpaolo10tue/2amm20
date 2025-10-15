@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --gpus=2
 #SBATCH --cpus-per-task=8
-#SBATCH --time=03:00:00
+#SBATCH --time=00:30:00
 #SBATCH --partition=gpu_mig
 #SBATCH --reservation=terv92681
 
