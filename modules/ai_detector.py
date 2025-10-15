@@ -28,26 +28,16 @@ def run_ai_detector(detector_name, df, answer_name):
 
 # --- Binoculars ---
 def run_binoculars(df, answer_name):
-    performer_model_name = "tiiuae/falcon-rw-1b"
-    reference_model_name = "tiiuae/falcon-rw-1b"
-
     if "binoculars" not in MODEL_CACHE:
         print(f"[Binoculars] Loading models on {DEVICE}...")
-        # Automatically map model to GPU in a memory-efficient way
-        performer_model = AutoModelForCausalLM.from_pretrained(
-            performer_model_name,
-            device_map="auto",        # automatically spread layers on available GPU(s)
-            torch_dtype=torch.float16,  # 16-bit precision reduces memory by ~2x
-            low_cpu_mem_usage=True
-        )
         
-        tokenizer = AutoTokenizer.from_pretrained(performer_model_name)
-         
-        # Initialize Binoculars with these models
+        # Initialize Binoculars with model name/path strings
+        # The library handles loading internally
         bino = Binoculars(
-            performer_model=performer_model,
-            performer_tokenizer=tokenizer,
-            reference_model_name_or_path=reference_model_name
+            observer_name_or_path="tiiuae/falcon-7b",
+            performer_name_or_path="tiiuae/falcon-7b-instruct",
+            use_bfloat16=True,  # Use bfloat16 for memory efficiency
+            max_token_observed=512
         )
         MODEL_CACHE["binoculars"] = bino
     else:
@@ -55,8 +45,10 @@ def run_binoculars(df, answer_name):
 
     scores, preds = [], []
     for text in df[answer_name]:
-        scores.append(bino.compute_score(text))
-        preds.append(bino.predict(text))
+        score = bino.compute_score(text)
+        pred = bino.predict(text)
+        scores.append(score)
+        preds.append(pred)
 
     df[answer_name + "_detection_score"] = scores
     df[answer_name + "_detection_prediction"] = preds
