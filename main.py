@@ -10,7 +10,7 @@ PROMPT_FILE = "prompt.csv"
 AI_MODEL_NAME = "llama"
 AI_DETECTOR_NAME = "binoculars"
 
-NUMBER_OF_QUESTIONS = 5
+NUMBER_OF_QUESTIONS = 30
 MIN_LENGTH_ANSWER = 100
 
 def main():
