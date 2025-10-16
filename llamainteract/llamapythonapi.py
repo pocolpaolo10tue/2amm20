@@ -41,7 +41,7 @@ class LlamaInterface:
         results = []
 
         for question in questions:
-            prompt = f"Q: {question} A: "
+            prompt = f"Q: {question[:1000]} A: "  # truncate long question text
             result = self.llm.create_completion(
                 prompt,
                 max_tokens=max_tokens,
