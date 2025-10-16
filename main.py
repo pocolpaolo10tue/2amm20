@@ -12,6 +12,7 @@ AI_DETECTOR_NAME = "binoculars"
 
 NUMBER_OF_QUESTIONS = 30
 MIN_LENGTH_ANSWER = 100
+MAX_LENGTH_QUESTION = 1000
 
 def main():
     mp.set_start_method("spawn", force=True)
@@ -20,7 +21,7 @@ def main():
     df, prompt = load_datasets(DATASET_NAME,PROMPT_FILE)
    
     print("=== Clean and limit the dataset ===")
-    df = clean_dataset(df, NUMBER_OF_QUESTIONS, MIN_LENGTH_ANSWER)
+    df = clean_dataset(df, NUMBER_OF_QUESTIONS, MIN_LENGTH_ANSWER, MAX_LENGTH_QUESTION)
 
     print("=== Generating AI answers ===")
     df = generate_ai_answers(df, AI_MODEL_NAME, "question")
