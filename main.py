@@ -4,14 +4,14 @@ from modules.ai_prompting import generate_ai_answers
 from modules.ai_detector import run_ai_detector
 import multiprocessing as mp
 
-DATASET_NAME = "writingprompts_QA.parquet"
+DATASET_NAME = "stackexchange_QA.parquet"
 PROMPT_FILE = "prompt.csv"
 
 AI_MODEL_NAME = "llama"
-AI_DETECTOR_NAME = "detectgpt"
+AI_DETECTOR_NAME = "binoculars"
 
-NUMBER_OF_QUESTIONS = 100
-MIN_LENGTH_ANSWER = 200
+NUMBER_OF_QUESTIONS = 5
+MIN_LENGTH_ANSWER = 100
 
 def main():
     mp.set_start_method("spawn", force=True)
