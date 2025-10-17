@@ -8,9 +8,9 @@ DATASET_NAME = "stackexchange_QA.parquet"
 PROMPT_FILE = "casual_prompt.csv"
 
 AI_MODEL_NAME = "llama"
-AI_DETECTOR_NAME = "binoculars"
+AI_DETECTOR_NAME = "fastdetectgpt"
 
-NUMBER_OF_QUESTIONS = 100
+NUMBER_OF_QUESTIONS = 3
 MIN_LENGTH_ANSWER = 100
 MAX_LENGTH_QUESTION = 1000
 
