@@ -5,7 +5,7 @@ from modules.ai_detector import run_ai_detector
 import multiprocessing as mp
 
 DATASET_NAME = "stackexchange_QA.parquet"
-PROMPT_FILE = "instructive_prompt.csv"
+PROMPT_FILE = "casual_prompt.csv"
 
 AI_MODEL_NAME = "llama"
 AI_DETECTOR_NAME = "binoculars"
