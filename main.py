@@ -5,12 +5,12 @@ from modules.ai_detector import run_ai_detector
 import multiprocessing as mp
 
 DATASET_NAME = "stackexchange_QA.parquet"
-PROMPT_FILE = "prompt.csv"
+PROMPT_FILE = "instructive_prompt.csv"
 
 AI_MODEL_NAME = "llama"
 AI_DETECTOR_NAME = "binoculars"
 
-NUMBER_OF_QUESTIONS = 101
+NUMBER_OF_QUESTIONS = 100
 MIN_LENGTH_ANSWER = 100
 MAX_LENGTH_QUESTION = 1000
 
@@ -42,7 +42,7 @@ def main():
     df = run_ai_detector(AI_DETECTOR_NAME, df, "question_with_prompt_answer_ai")
     
     print("=== Creating CSV output file ===")
-    df.to_csv(f"output_{NUMBER_OF_QUESTIONS}_{AI_DETECTOR_NAME}.csv", index = False)
+    df.to_csv(f"output_{NUMBER_OF_QUESTIONS}_{AI_DETECTOR_NAME}_{PROMPT_FILE}", index = False)
     
     print("=== Finished ===")
     
