@@ -8,7 +8,7 @@ DATASET_NAME = "stackexchange_QA.parquet"
 PROMPT_FILE = "florian_prompt.csv"
 
 AI_MODEL_NAME = "llama"
-AI_DETECTOR_NAME = "dna-gpt"
+AI_DETECTOR_NAME = "entropy"
 
 NUMBER_OF_QUESTIONS = 3
 MIN_LENGTH_ANSWER = 100
