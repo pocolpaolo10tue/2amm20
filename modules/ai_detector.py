@@ -22,12 +22,6 @@ def run_ai_detector(detector_name, df, answer_name):
         return run_roberta(df, answer_name)
     elif name == "detectgpt":
         return run_detectgpt(df, answer_name)
-    elif name == "dna-gpt":
-        return run_dnagpt(df, answer_name)
-    elif name == "fastdetectgpt":
-        return run_fastdetectgpt(df, answer_name)
-    elif name == "entropy":
-        return run_entropy(df, answer_name)
     else:
         raise ValueError(f"Unknown detector: {detector_name}")
 
@@ -143,82 +137,6 @@ def run_detectgpt(df, answer_name):
 
     df[answer_name + "_detection_score"] = scores
     df[answer_name + "_detection_prediction"] = preds
-    return df
-
-
-# --- DNA-GPT ---
-def run_dnagpt(df, answer_name):
-    """
-    Embedding-based detector using DNA-GPT logic.
-    Model: 'mikegarts/dna-gpt-base' (or similar HF model)
-    Scores near 1.0 => AI-generated, near 0.0 => human.
-    """
-    if "dna-gpt" not in MODEL_CACHE:
-        print(f"[DNA-GPT] Loading model on {DEVICE}...")
-        pipe = pipeline("text-classification", model="mikegarts/dna-gpt-base", device=0 if DEVICE != "cpu" else -1)
-        MODEL_CACHE["dna-gpt"] = pipe
-    pipe = MODEL_CACHE["dna-gpt"]
-
-    preds = pipe(df[answer_name].tolist(), truncation=True)
-    df[f"{answer_name}_detection_score"] = [p["score"] for p in preds]
-    df[f"{answer_name}_detection_prediction"] = [p["label"] for p in preds]
-    return df
-
-
-# --- Fast-DetectGPT ---
-def run_fastdetectgpt(df, answer_name):
-    """
-    Efficient curvature-based zero-shot detector.
-    Model: 'sakanaai/fast-detect-gpt'
-    """
-    if "fastdetectgpt" not in MODEL_CACHE:
-        print(f"[Fast-DetectGPT] Loading model on {DEVICE}...")
-        pipe = pipeline("text-classification", model="sakanaai/fast-detect-gpt", device=0 if DEVICE != "cpu" else -1)
-        MODEL_CACHE["fastdetectgpt"] = pipe
-    pipe = MODEL_CACHE["fastdetectgpt"]
-
-    preds = pipe(df[answer_name].tolist(), truncation=True)
-    df[f"{answer_name}_detection_score"] = [p["score"] for p in preds]
-    df[f"{answer_name}_detection_prediction"] = [p["label"] for p in preds]
-    return df
-
-
-# --- Entropy Detector ---
-def run_entropy(df, answer_name):
-    """
-    Simple local detector measuring token-level entropy.
-    Lower entropy => AI-like; higher entropy => human-like.
-    Uses GPT-Neo for token probabilities.
-    """
-    if "entropy" not in MODEL_CACHE:
-        print(f"[Entropy] Using device: {DEVICE}")
-        model_name = "EleutherAI/gpt-neo-1.3B"  # medium-size LM for likelihoods
-        tokenizer = AutoTokenizer.from_pretrained(model_name)
-        model = AutoModelForCausalLM.from_pretrained(model_name).to(DEVICE)
-        model.eval()
-        MODEL_CACHE["entropy"] = (model, tokenizer)
-
-    model, tokenizer = MODEL_CACHE["entropy"]
-
-    scores, preds = [], []
-    for text in df[answer_name]:
-        if not isinstance(text, str) or len(text.strip()) == 0:
-            scores.append(None)
-            preds.append("Unknown")
-            continue
-
-        inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=512).to(DEVICE)
-        with torch.no_grad():
-            logits = model(**inputs).logits
-            probs = torch.nn.functional.softmax(logits, dim=-1)
-            token_entropy = (-probs * torch.log2(probs + 1e-12)).sum(-1)
-            avg_entropy = token_entropy.mean().item()
-
-        scores.append(avg_entropy)
-        preds.append("AI-generated" if avg_entropy < 3.5 else "Human-written")
-
-    df[f"{answer_name}_detection_score"] = scores
-    df[f"{answer_name}_detection_prediction"] = preds
     return df
 
 # # --- Quick test block ---

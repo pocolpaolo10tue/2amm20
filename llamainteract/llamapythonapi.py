@@ -45,7 +45,7 @@ class LlamaInterface:
             result = self.llm.create_completion(
                 prompt,
                 max_tokens=max_tokens,
-                stop=["Q:", "\n"],
+                stop=["Q:"],
                 echo=False
             )
             results.append(result)
