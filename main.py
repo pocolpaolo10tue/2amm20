@@ -111,17 +111,6 @@ def main_params_test():
         )
         df = run_ai_detector(AI_DETECTOR_NAME, df, "answer")
         df = run_ai_detector(AI_DETECTOR_NAME, df, "question_answer_ai")
-        df = create_question_with_prompt(df, prompt)
-        df = generate_ai_answers(
-            df.copy(),
-            model_name=AI_MODEL_NAME,
-            question_column="question_with_prompt",
-            temperature=full_params["temperature"],
-            top_p=full_params["top_p"],
-            top_k=full_params["top_k"],
-            repeat_penalty=full_params["repeat_penalty"]
-        )
-        df = run_ai_detector(AI_DETECTOR_NAME, df, "question_with_prompt_answer_ai")
 
         # Add parameter info to each row for later analysis
         for key, val in full_params.items():
@@ -130,7 +119,10 @@ def main_params_test():
 
     print("=== Creating CSV output file ===")
     df_combined = pd.concat(all_results, ignore_index=True)
-    output_name = f"output_param_{NUMBER_OF_QUESTIONS}_{AI_DETECTOR_NAME}_{PROMPT_FILE}.csv"
+    
+    param_tag = "_".join([f"{k}{v}" for k, v in PARAM_GRID[0].items()])
+    output_name = f"output_param_{NUMBER_OF_QUESTIONS}_{AI_DETECTOR_NAME}_{param_tag}.csv"
+
     df_combined.to_csv(output_name, index=False)
 
     print(f"=== Finished ===")
