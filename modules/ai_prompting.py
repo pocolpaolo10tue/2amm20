@@ -2,13 +2,14 @@ import pandas as pd
 from llamainteract.llamapythonapi import LlamaInterface
 import time
 
-def generate_ai_answers(df, model_name, question_column, chunk_size=256):
+# Default values provided from the llama-cpp specification
+def generate_ai_answers(df, model_name, question_column, chunk_size=256, temperature=0.8, top_p=0.95, top_k=40, repeat_penalty=1.1):
     if model_name == "llama":
-        return run_llama(df, question_column, chunk_size=chunk_size)
+        return run_llama(df, question_column, chunk_size=chunk_size, t=temperature, p=top_p, k=top_k, r=repeat_penalty)
     else:
         raise ValueError(f"Unsupported model_name: {model_name}")
 
-def run_llama(df, question_column, chunk_size=256):
+def run_llama(df, question_column, chunk_size, t, p, k, r):
     """
     Run the llama model on a dataframe column (single process version).
     Includes timing for model initialization and inference.
@@ -29,7 +30,7 @@ def run_llama(df, question_column, chunk_size=256):
         print(f"[Main] Processing chunk {i // chunk_size + 1} with {len(chunk)} questions...")
 
         start_infer = time.time()
-        answers = llama.batch_qa(chunk)
+        answers = llama.batch_qa(chunk, temperature=t, top_p=p, top_k=k, repeat_penalty=r)
         end_infer = time.time()
 
         print(f"[Main] batch_qa on {len(chunk)} questions took {end_infer - start_infer:.2f} seconds")

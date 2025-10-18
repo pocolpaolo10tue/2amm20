@@ -32,8 +32,9 @@ class LlamaInterface:
             stop=["Q:", "\n"],
             echo=False,
         )
-
-    def batch_qa(self, questions, max_tokens=64):
+    
+    # Default values provided from the llama-cpp specification
+    def batch_qa(self, questions, max_tokens=64, temperature=0.8, top_p=0.95, top_k=40, repeat_penalty=1.1):
         """
         Sequentially or threaded batch processing compatible with llama_cpp==0.3.16.
         Each prompt is processed individually.
@@ -45,6 +46,10 @@ class LlamaInterface:
             result = self.llm.create_completion(
                 prompt,
                 max_tokens=max_tokens,
+                temperature=temperature,
+                top_p=top_p,
+                top_k=top_k,
+                repeat_penalty=repeat_penalty,
                 stop=["Q:"],
                 echo=False
             )

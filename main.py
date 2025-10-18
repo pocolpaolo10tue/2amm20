@@ -10,13 +10,11 @@ PROMPT_FILE = "overall_prompt.csv"
 AI_MODEL_NAME = "llama"
 AI_DETECTOR_NAME = "binoculars"
 
-NUMBER_OF_QUESTIONS = 100
+NUMBER_OF_QUESTIONS = 2
 MIN_LENGTH_ANSWER = 100
 MAX_LENGTH_QUESTION = 1000
 
 def main():
-    mp.set_start_method("spawn", force=True)
-    
     print("=== Loading data ===")
     df, prompt = load_datasets(DATASET_NAME,PROMPT_FILE)
    
@@ -46,6 +44,83 @@ def main():
     
     print("=== Finished ===")
     
+PARAM_GRID = [
+    # Baseline
+    {},
+    
+    #Temperature
+    # {"temperature": 0.0},
+    {"temperature": 0.2},
+    # {"temperature": 0.4},
+    # {"temperature": 0.6},
+    # {"temperature": 0.8},
+    # {"temperature": 1.0},
+    # {"temperature": 1.2},
+    # {"temperature": 1.4},
+    # {"temperature": 1.6},
+    # {"temperature": 1.8},
+    # {"temperature": 2.0},
+
+    # Top-p
+    {"top_p": 0.3},
+    # {"top_p": 0.6},
+    # {"top_p": 1.0},
+    
+    # # Top-k
+    # {"top_k": 50},
+    # {"top_k": 50},
+    # {"top_k": 100},
+    
+    # # Repeat Penalty
+    # {"repeat_penalty": 1.0},
+    # {"repeat_penalty": 1.2},
+    # {"repeat_penalty": 1.5}
+]
+
+# Define default values
+DEFAULT_PARAMS = {
+    "temperature": 0.8,
+    "top_p": 0.95,
+    "top_k": 40,
+    "repeat_penalty": 1.1
+}
+
+def main_params_test():
+    print("=== Loading data ===")
+    df, prompt = load_datasets(DATASET_NAME, PROMPT_FILE)
+   
+    print("=== Clean and limit the dataset ===")
+    df = clean_dataset(df, NUMBER_OF_QUESTIONS, MIN_LENGTH_ANSWER, MAX_LENGTH_QUESTION)
+
+    print("=== Starting parameter sweep ===")
+    # Collect results from all parameter sets into a single CSV
+    all_results = []
+
+    for i, param_set in enumerate(PARAM_GRID, 1):
+        # Merge operator on the datasets, param set overrides defaults if specified
+        full_params = {**DEFAULT_PARAMS, **param_set}
+        df_results = generate_ai_answers(
+            df.copy(),
+            model_name=AI_MODEL_NAME,
+            question_column="question",
+            temperature=full_params["temperature"],
+            top_p=full_params["top_p"],
+            top_k=full_params["top_k"],
+            repeat_penalty=full_params["repeat_penalty"]
+        )
+        df_results = run_ai_detector(AI_DETECTOR_NAME, df_results, "answer")
+
+        # Add parameter info to each row for later analysis
+        for key, val in full_params.items():
+            df_results[key] = val
+        all_results.append(df_results)
+
+    print("=== Creating CSV output file ===")
+    df_combined = pd.concat(all_results, ignore_index=True)
+    output_name = f"output_param_{NUMBER_OF_QUESTIONS}_{AI_DETECTOR_NAME}_{PROMPT_FILE}.csv"
+    df_combined.to_csv(output_name, index=False)
+
+    print(f"=== Finished ===")
 
 if __name__ == "__main__":
-    main()
+    main_params_test()
