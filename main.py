@@ -8,9 +8,9 @@ DATASET_NAME = "stackexchange_QA.parquet"
 PROMPT_FILE = "overall_prompt.csv"
 
 AI_MODEL_NAME = "llama"
-AI_DETECTOR_NAME = "detectgpt"
+AI_DETECTOR_NAME = "binoculars"
 
-NUMBER_OF_QUESTIONS = 100
+NUMBER_OF_QUESTIONS = 1
 MIN_LENGTH_ANSWER = 100
 MAX_LENGTH_QUESTION = 1000
 
@@ -50,31 +50,31 @@ PARAM_GRID = [
     {},
     
     #Temperature
-    {"temperature": 0.0},
-    {"temperature": 0.2},
-    {"temperature": 0.5},
-    # {"temperature": 0.8},
-    {"temperature": 1.0},
-    {"temperature": 1.4},
-    {"temperature": 2.0},
+    # {"temperature": 0.0},
+    # {"temperature": 0.2},
+    # {"temperature": 0.5},
+    # # {"temperature": 0.8},
+    # {"temperature": 1.0},
+    # {"temperature": 1.4},
+    # {"temperature": 2.0},
 
-    # Top-p
-    {"top_p": 0.6},
-    {"top_p": 0.9},
-    # {"top_p": 0.95},
-    {"top_p": 1.0},
+    # # Top-p
+    # {"top_p": 0.6},
+    # {"top_p": 0.9},
+    # # {"top_p": 0.95},
+    # {"top_p": 1.0},
     
-    # # Top-k
-    {"top_k": 5},
-    {"top_k": 10},
-    # {"top_k": 40},
-    {"top_k": 100},
+    # # # Top-k
+    # {"top_k": 5},
+    # {"top_k": 10},
+    # # {"top_k": 40},
+    # {"top_k": 100},
     
-    # Repeat Penalty
-    {"repeat_penalty": 1.0},
-    # {"repeat_penalty": 1.1},
-    {"repeat_penalty": 1.2},
-    {"repeat_penalty": 1.5}
+    # # Repeat Penalty
+    # {"repeat_penalty": 1.0},
+    # # {"repeat_penalty": 1.1},
+    # {"repeat_penalty": 1.2},
+    # {"repeat_penalty": 1.5}
 ]
 
 # Define default values
@@ -97,10 +97,11 @@ def main_params_test():
     all_results = []
 
     for i, param_set in enumerate(PARAM_GRID, 1):
+        print(f"=== Param Sweep {i} ===")
         # Merge operator on the datasets, param set overrides defaults if specified
         full_params = {**DEFAULT_PARAMS, **param_set}
-        df_results = generate_ai_answers(
-            df.copy(),
+        df = generate_ai_answers(
+            df,
             model_name=AI_MODEL_NAME,
             question_column="question",
             temperature=full_params["temperature"],
@@ -108,12 +109,24 @@ def main_params_test():
             top_k=full_params["top_k"],
             repeat_penalty=full_params["repeat_penalty"]
         )
-        df_results = run_ai_detector(AI_DETECTOR_NAME, df_results, "answer")
+        df = run_ai_detector(AI_DETECTOR_NAME, df, "answer")
+        df = run_ai_detector(AI_DETECTOR_NAME, df, "question_answer_ai")
+        df = create_question_with_prompt(df, prompt)
+        df = generate_ai_answers(
+            df.copy(),
+            model_name=AI_MODEL_NAME,
+            question_column="question_with_prompt",
+            temperature=full_params["temperature"],
+            top_p=full_params["top_p"],
+            top_k=full_params["top_k"],
+            repeat_penalty=full_params["repeat_penalty"]
+        )
+        df = run_ai_detector(AI_DETECTOR_NAME, df, "question_with_prompt_answer_ai")
 
         # Add parameter info to each row for later analysis
         for key, val in full_params.items():
-            df_results[key] = val
-        all_results.append(df_results)
+            df[key] = val
+        all_results.append(df)
 
     print("=== Creating CSV output file ===")
     df_combined = pd.concat(all_results, ignore_index=True)
@@ -123,4 +136,4 @@ def main_params_test():
     print(f"=== Finished ===")
 
 if __name__ == "__main__":
-    main()
+    main_params_test()
