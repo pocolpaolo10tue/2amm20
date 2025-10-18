@@ -10,7 +10,7 @@ PROMPT_FILE = "overall_prompt.csv"
 AI_MODEL_NAME = "llama"
 AI_DETECTOR_NAME = "binoculars"
 
-NUMBER_OF_QUESTIONS = 1
+NUMBER_OF_QUESTIONS = 20
 MIN_LENGTH_ANSWER = 100
 MAX_LENGTH_QUESTION = 1000
 
@@ -47,16 +47,16 @@ def main():
 # Tested Parameters, it's unnecessary to test the default values for everything if it's covered by the baseline
 PARAM_GRID = [
     # Baseline
+    #Temperature
+    {"temperature": 0.0},
+    {"temperature": 0.2},
+    {"temperature": 0.5},
+    # {"temperature": 0.8},
+    {"temperature": 1.0},
+    {"temperature": 1.4},
+    {"temperature": 2.0},
     {},
     
-    #Temperature
-    # {"temperature": 0.0},
-    # {"temperature": 0.2},
-    # {"temperature": 0.5},
-    # # {"temperature": 0.8},
-    # {"temperature": 1.0},
-    # {"temperature": 1.4},
-    # {"temperature": 2.0},
 
     # # Top-p
     # {"top_p": 0.6},
@@ -87,7 +87,7 @@ DEFAULT_PARAMS = {
 
 def main_params_test():
     print("=== Loading data ===")
-    df, prompt = load_datasets(DATASET_NAME, PROMPT_FILE)
+    df, ignored = load_datasets(DATASET_NAME, PROMPT_FILE)
    
     print("=== Clean and limit the dataset ===")
     df = clean_dataset(df, NUMBER_OF_QUESTIONS, MIN_LENGTH_ANSWER, MAX_LENGTH_QUESTION)
