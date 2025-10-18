@@ -59,7 +59,7 @@ def run_binoculars(df, answer_name):
 def run_roberta(df, answer_name,batch_size=16):
     if "roberta" not in MODEL_CACHE:
         print(f"[RoBERTa] Using device: {DEVICE}")
-        model_name = "roberta-base-alpaca-detector"
+        model_name = "roberta-base-openai-detector"
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         model = AutoModelForSequenceClassification.from_pretrained(model_name).to(DEVICE)
         model.eval()

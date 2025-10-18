@@ -8,9 +8,9 @@ DATASET_NAME = "stackexchange_QA.parquet"
 PROMPT_FILE = "overall_prompt.csv"
 
 AI_MODEL_NAME = "llama"
-AI_DETECTOR_NAME = "binoculars"
+AI_DETECTOR_NAME = "roberta"
 
-NUMBER_OF_QUESTIONS = 2
+NUMBER_OF_QUESTIONS = 100
 MIN_LENGTH_ANSWER = 100
 MAX_LENGTH_QUESTION = 1000
 
@@ -43,38 +43,38 @@ def main():
     df.to_csv(f"output_{NUMBER_OF_QUESTIONS}_{AI_DETECTOR_NAME}_{PROMPT_FILE}", index = False)
     
     print("=== Finished ===")
-    
+
+# Tested Parameters, it's unnecessary to test the default values for everything if it's covered by the baseline
 PARAM_GRID = [
     # Baseline
     {},
     
     #Temperature
-    # {"temperature": 0.0},
+    {"temperature": 0.0},
     {"temperature": 0.2},
-    # {"temperature": 0.4},
-    # {"temperature": 0.6},
+    {"temperature": 0.5},
     # {"temperature": 0.8},
-    # {"temperature": 1.0},
-    # {"temperature": 1.2},
-    # {"temperature": 1.4},
-    # {"temperature": 1.6},
-    # {"temperature": 1.8},
-    # {"temperature": 2.0},
+    {"temperature": 1.0},
+    {"temperature": 1.4},
+    {"temperature": 2.0},
 
     # Top-p
-    {"top_p": 0.3},
-    # {"top_p": 0.6},
-    # {"top_p": 1.0},
+    {"top_p": 0.6},
+    {"top_p": 0.9},
+    # {"top_p": 0.95},
+    {"top_p": 1.0},
     
     # # Top-k
-    # {"top_k": 50},
-    # {"top_k": 50},
-    # {"top_k": 100},
+    {"top_k": 5},
+    {"top_k": 10},
+    # {"top_k": 40},
+    {"top_k": 100},
     
-    # # Repeat Penalty
-    # {"repeat_penalty": 1.0},
-    # {"repeat_penalty": 1.2},
-    # {"repeat_penalty": 1.5}
+    # Repeat Penalty
+    {"repeat_penalty": 1.0},
+    # {"repeat_penalty": 1.1},
+    {"repeat_penalty": 1.2},
+    {"repeat_penalty": 1.5}
 ]
 
 # Define default values
@@ -123,4 +123,4 @@ def main_params_test():
     print(f"=== Finished ===")
 
 if __name__ == "__main__":
-    main_params_test()
+    main()
