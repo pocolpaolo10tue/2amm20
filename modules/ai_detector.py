@@ -96,7 +96,7 @@ def run_roberta(df, answer_name,batch_size=16):
 def run_detectgpt(df, answer_name):
     if "detectgpt" not in MODEL_CACHE:
         print(f"[DetectGPT] Using device: {DEVICE}")
-        model_name = "meta-llama/Llama-3-1b"
+        model_name = "gpt2"
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         model = AutoModelForCausalLM.from_pretrained(model_name).to(DEVICE)
         model.eval()
