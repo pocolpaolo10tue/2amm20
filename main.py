@@ -10,7 +10,7 @@ PROMPT_FILE = "overall_prompt.csv"
 AI_MODEL_NAME = "llama"
 AI_DETECTOR_NAME = "binoculars"
 
-NUMBER_OF_QUESTIONS = 20
+NUMBER_OF_QUESTIONS = 100
 MIN_LENGTH_ANSWER = 100
 MAX_LENGTH_QUESTION = 1000
 
@@ -132,4 +132,4 @@ def main_params_test():
     print(f"=== Finished ===")
 
 if __name__ == "__main__":
-    main_params_test()
+    main()
