@@ -65,17 +65,20 @@ PARAM_GRID = [
     # # {"top_p": 0.95},
     # {"top_p": 1.0},
     
-    # Top-k
-    {"top_k": 5},
-    {"top_k": 10},
-    # {"top_k": 40},
-    {"top_k": 100},
+    # # Top-k
+    # {"top_k": 5},
+    # {"top_k": 10},
+    # # {"top_k": 40},
+    # {"top_k": 100},
     
-    # # Repeat Penalty
-    # {"repeat_penalty": 1.0},
-    # # {"repeat_penalty": 1.1},
-    # {"repeat_penalty": 1.2},
-    # {"repeat_penalty": 1.5}
+    # Repeat Penalty
+    {"repeat_penalty": 1.0},
+    # {"repeat_penalty": 1.1},
+    {"repeat_penalty": 1.2},
+    {"repeat_penalty": 1.3},
+    {"repeat_penalty": 1.4},
+    {"repeat_penalty": 1.5},
+    {"repeat_penalty": 1.6}
 ]
 
 # Define default values
