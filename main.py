@@ -10,7 +10,7 @@ PROMPT_FILE = "overall_prompt.csv"
 AI_MODEL_NAME = "llama"
 AI_DETECTOR_NAME = "binoculars"
 
-NUMBER_OF_QUESTIONS = 1
+NUMBER_OF_QUESTIONS = 20
 MIN_LENGTH_ANSWER = 100
 MAX_LENGTH_QUESTION = 1000
 
@@ -47,7 +47,7 @@ def main():
 # Tested Parameters, it's unnecessary to test the default values for everything if it's covered by the baseline
 PARAM_GRID = [
     # Baseline
-    {},
+    # {},
     
     # #Temperature
     # {"temperature": 0.0},
@@ -65,17 +65,17 @@ PARAM_GRID = [
     # # {"top_p": 0.95},
     # {"top_p": 1.0},
     
-    # # Top-k
-    # {"top_k": 5},
-    # {"top_k": 10},
-    # # {"top_k": 40},
-    # {"top_k": 100},
+    # Top-k
+    {"top_k": 5},
+    {"top_k": 10},
+    # {"top_k": 40},
+    {"top_k": 100},
     
-    # Repeat Penalty
-    {"repeat_penalty": 1.0},
-    # {"repeat_penalty": 1.1},
-    {"repeat_penalty": 1.2},
-    {"repeat_penalty": 1.5}
+    # # Repeat Penalty
+    # {"repeat_penalty": 1.0},
+    # # {"repeat_penalty": 1.1},
+    # {"repeat_penalty": 1.2},
+    # {"repeat_penalty": 1.5}
 ]
 
 # Define default values
