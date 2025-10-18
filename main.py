@@ -59,17 +59,17 @@ PARAM_GRID = [
     # {"temperature": 2.0},
     
 
-    # # Top-p
-    # {"top_p": 0.6},
-    # {"top_p": 0.9},
-    # # {"top_p": 0.95},
-    # {"top_p": 1.0},
+    # Top-p
+    {"top_p": 0.6},
+    {"top_p": 0.9},
+    # {"top_p": 0.95},
+    {"top_p": 1.0},
     
-    # Top-k
-    {"top_k": 5},
-    {"top_k": 10},
-    # {"top_k": 40},
-    {"top_k": 100},
+    # # Top-k
+    # {"top_k": 5},
+    # {"top_k": 10},
+    # # {"top_k": 40},
+    # {"top_k": 100},
     
     # # Repeat Penalty
     # {"repeat_penalty": 1.0},
