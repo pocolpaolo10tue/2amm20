@@ -47,7 +47,7 @@ def main():
 # Tested Parameters, it's unnecessary to test the default values for everything if it's covered by the baseline
 PARAM_GRID = [
     # Baseline
-    # {},
+    {},
     
     # #Temperature
     # {"temperature": 0.0},
@@ -101,8 +101,10 @@ def main_params_test():
         print(f"=== Param Sweep {i} ===")
         # Merge operator on the datasets, param set overrides defaults if specified
         full_params = {**DEFAULT_PARAMS, **param_set}
-        df = generate_ai_answers(
-            df,
+        df_temp = df.copy()
+
+        df_temp = generate_ai_answers(
+            df_temp,
             model_name=AI_MODEL_NAME,
             question_column="question",
             temperature=full_params["temperature"],
@@ -110,13 +112,14 @@ def main_params_test():
             top_k=full_params["top_k"],
             repeat_penalty=full_params["repeat_penalty"]
         )
-        df = run_ai_detector(AI_DETECTOR_NAME, df, "answer")
-        df = run_ai_detector(AI_DETECTOR_NAME, df, "question_answer_ai")
+        df_temp = run_ai_detector(AI_DETECTOR_NAME, df_temp, "answer")
+        df_temp = run_ai_detector(AI_DETECTOR_NAME, df_temp, "question_answer_ai")
 
-        # Add parameter info to each row for later analysis
         for key, val in full_params.items():
-            df[key] = val
-        all_results.append(df)
+            df_temp[key] = val
+
+        all_results.append(df_temp)
+
 
     print("=== Creating CSV output file ===")
     df_combined = pd.concat(all_results, ignore_index=True)
