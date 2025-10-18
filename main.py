@@ -5,12 +5,12 @@ from modules.ai_detector import run_ai_detector
 import multiprocessing as mp
 
 DATASET_NAME = "stackexchange_QA.parquet"
-PROMPT_FILE = "miscellaneous_prompt.csv"
+PROMPT_FILE = "overall_prompt.csv"
 
 AI_MODEL_NAME = "llama"
 AI_DETECTOR_NAME = "binoculars"
 
-NUMBER_OF_QUESTIONS = 100
+NUMBER_OF_QUESTIONS = 1
 MIN_LENGTH_ANSWER = 100
 MAX_LENGTH_QUESTION = 1000
 
@@ -47,16 +47,16 @@ def main():
 # Tested Parameters, it's unnecessary to test the default values for everything if it's covered by the baseline
 PARAM_GRID = [
     # Baseline
-    # {},
+    {},
     
-    #Temperature
-    {"temperature": 0.0},
-    {"temperature": 0.2},
-    {"temperature": 0.5},
-    # {"temperature": 0.8},
-    {"temperature": 1.0},
-    {"temperature": 1.4},
-    {"temperature": 2.0},
+    # #Temperature
+    # {"temperature": 0.0},
+    # {"temperature": 0.2},
+    # {"temperature": 0.5},
+    # # {"temperature": 0.8},
+    # {"temperature": 1.0},
+    # {"temperature": 1.4},
+    # {"temperature": 2.0},
     
 
     # # Top-p
@@ -71,11 +71,11 @@ PARAM_GRID = [
     # # {"top_k": 40},
     # {"top_k": 100},
     
-    # # Repeat Penalty
-    # {"repeat_penalty": 1.0},
-    # # {"repeat_penalty": 1.1},
-    # {"repeat_penalty": 1.2},
-    # {"repeat_penalty": 1.5}
+    # Repeat Penalty
+    {"repeat_penalty": 1.0},
+    # {"repeat_penalty": 1.1},
+    {"repeat_penalty": 1.2},
+    {"repeat_penalty": 1.5}
 ]
 
 # Define default values
@@ -89,20 +89,31 @@ DEFAULT_PARAMS = {
 def main_params_test():
     print("=== Loading data ===")
     df, ignored = load_datasets(DATASET_NAME, PROMPT_FILE)
-   
+    print(f"[INFO] Loaded dataset with {len(df)} rows. Ignored entries: {len(ignored)}")
+
     print("=== Clean and limit the dataset ===")
     df = clean_dataset(df, NUMBER_OF_QUESTIONS, MIN_LENGTH_ANSWER, MAX_LENGTH_QUESTION)
+    print(f"[INFO] Cleaned dataset has {len(df)} rows after filtering.")
 
     print("=== Starting parameter sweep ===")
-    # Collect results from all parameter sets into a single CSV
     all_results = []
 
     for i, param_set in enumerate(PARAM_GRID, 1):
-        print(f"=== Param Sweep {i} ===")
-        # Merge operator on the datasets, param set overrides defaults if specified
-        full_params = {**DEFAULT_PARAMS, **param_set}
-        df_temp = df.copy()
+        print(f"\n=== Param Sweep {i}/{len(PARAM_GRID)} ===")
+        print(f"[INFO] Raw param set: {param_set}")
 
+        # Merge operator: defaults overridden by current params
+        full_params = {**DEFAULT_PARAMS, **param_set}
+        print("[INFO] Using parameters:")
+        for k, v in full_params.items():
+            print(f"   - {k}: {v}")
+
+        # Always work on a fresh copy
+        df_temp = df.copy()
+        print(f"[DEBUG] Created df_temp copy (rows={len(df_temp)})")
+
+        # --- Generation ---
+        print("[STEP] Generating AI answers...")
         df_temp = generate_ai_answers(
             df_temp,
             model_name=AI_MODEL_NAME,
@@ -112,24 +123,38 @@ def main_params_test():
             top_k=full_params["top_k"],
             repeat_penalty=full_params["repeat_penalty"]
         )
-        df_temp = run_ai_detector(AI_DETECTOR_NAME, df_temp, "answer")
-        df_temp = run_ai_detector(AI_DETECTOR_NAME, df_temp, "question_answer_ai")
+        print("[INFO] Finished generating AI answers.")
 
+        # --- Detection: answer ---
+        print("[STEP] Running AI detector on 'answer' column...")
+        df_temp = run_ai_detector(AI_DETECTOR_NAME, df_temp, "answer")
+        print("[INFO] Finished detection for 'answer'.")
+
+        # --- Detection: question+answer ---
+        print("[STEP] Running AI detector on 'question_answer_ai' column...")
+        df_temp = run_ai_detector(AI_DETECTOR_NAME, df_temp, "question_answer_ai")
+        print("[INFO] Finished detection for 'question_answer_ai'.")
+
+        # --- Add parameters for traceability ---
         for key, val in full_params.items():
             df_temp[key] = val
+        print(f"[DEBUG] Added parameter columns to df_temp (rows={len(df_temp)}).")
 
         all_results.append(df_temp)
+        print(f"[INFO] Param sweep {i} completed and stored.")
 
-
-    print("=== Creating CSV output file ===")
+    print("\n=== Creating CSV output file ===")
     df_combined = pd.concat(all_results, ignore_index=True)
-    
+    print(f"[INFO] Combined dataset total rows: {len(df_combined)}")
+
+    # Create tag based on first param set (you can change this to something else if needed)
     param_tag = "_".join([f"{k}{v}" for k, v in PARAM_GRID[0].items()])
     output_name = f"output_param_{NUMBER_OF_QUESTIONS}_{AI_DETECTOR_NAME}_{param_tag}.csv"
 
     df_combined.to_csv(output_name, index=False)
+    print(f"[SUCCESS] Saved combined results to: {output_name}")
+    print("=== Finished ===")
 
-    print(f"=== Finished ===")
 
 if __name__ == "__main__":
-    main()
+    main_params_test()
