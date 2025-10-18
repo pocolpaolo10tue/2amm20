@@ -47,22 +47,23 @@ def main():
 # Tested Parameters, it's unnecessary to test the default values for everything if it's covered by the baseline
 PARAM_GRID = [
     # Baseline
-    #Temperature
-    {"temperature": 0.0},
-    {"temperature": 0.2},
-    {"temperature": 0.5},
-    # {"temperature": 0.8},
-    {"temperature": 1.0},
-    {"temperature": 1.4},
-    {"temperature": 2.0},
-    {},
+    # {},
+    
+    # #Temperature
+    # {"temperature": 0.0},
+    # {"temperature": 0.2},
+    # {"temperature": 0.5},
+    # # {"temperature": 0.8},
+    # {"temperature": 1.0},
+    # {"temperature": 1.4},
+    # {"temperature": 2.0},
     
 
-    # # Top-p
-    # {"top_p": 0.6},
-    # {"top_p": 0.9},
-    # # {"top_p": 0.95},
-    # {"top_p": 1.0},
+    # Top-p
+    {"top_p": 0.6},
+    {"top_p": 0.9},
+    # {"top_p": 0.95},
+    {"top_p": 1.0},
     
     # # # Top-k
     # {"top_k": 5},
