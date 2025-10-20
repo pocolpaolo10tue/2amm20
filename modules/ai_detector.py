@@ -70,10 +70,11 @@ def run_llama_as_detector(df, answer_name):
     for text in df[answer_name]:
         score_prompt = f"Reply ONLY with a probability (e.g: '0.65') that the following text was AI generated:\n\n\n{text}"
         score = llama.prompt(score_prompt)
+        print(f"Score: {score}")
         pred_prompt = f"A detection model has assigned this answer a {score * 100}% chance of being AI generated, based on this score and your own judgement, evaluate whether the following text is AI generated, make sure to reply ONLY with 'human' or 'ai':\n\n\n{text}"
         pred = llama.prompt(pred_prompt)
-        scores.append(score)
-        preds.append(pred)
+        scores.append(score["choices"][0]["text"].strip())
+        preds.append(pred["choices"][0]["text"].strip())
 
     df[answer_name + "_detection_score"] = scores
     df[answer_name + "_detection_prediction"] = preds
