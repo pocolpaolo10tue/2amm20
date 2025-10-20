@@ -81,6 +81,7 @@ def run_llama_as_detector(df, answer_name):
             score_val = float(match.group(1))
         else:
             score_val = 0.5
+            print("|NO ANSWER FOUND|")
         
         pred_prompt = (
             f"A detection model has assigned this answer a {score_val * 100:.2f}% chance of being AI generated. "
