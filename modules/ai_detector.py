@@ -74,15 +74,14 @@ def run_llama_as_detector(df, answer_name):
         print(f"Score: {score_resp}")
 
         score_text = score_resp["choices"][0]["text"].strip()
-        score_val = float(score_text) # plsplsplsplspls work
-        
+
         match = re.search(r"(\d*\.\d+|\d+)", score_text)
         if match:
             score_val = float(match.group(1))
         else:
             score_val = 0.5
             print("|NO ANSWER FOUND|")
-        
+
         pred_prompt = (
             f"A detection model has assigned this answer a {score_val * 100:.2f}% chance of being AI generated. "
             f"Based on this score and your own judgement, evaluate whether the following text is AI generated. "
