@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=chungus-experiment
+#SBATCH --job-name=reppen-chungus-experiment
 #SBATCH --output=%x_%j.out
 #SBATCH --nodes=1
 #SBATCH --gpus=1
