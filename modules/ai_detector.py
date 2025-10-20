@@ -1,5 +1,6 @@
 from binoculars import Binoculars
 from pathlib import Path
+from llamainteract.llamapythonapi import LlamaInterface
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, AutoModelForCausalLM, pipeline
 import torch
 import pandas as pd
@@ -22,6 +23,8 @@ def run_ai_detector(detector_name, df, answer_name):
         return run_roberta(df, answer_name)
     elif name == "detectgpt":
         return run_detectgpt(df, answer_name)
+    elif name == "llama":
+        return run_llama_as_detector(df, answer_name)
     else:
         raise ValueError(f"Unknown detector: {detector_name}")
 
@@ -47,6 +50,28 @@ def run_binoculars(df, answer_name):
     for text in df[answer_name]:
         score = bino.compute_score(text)
         pred = bino.predict(text)
+        scores.append(score)
+        preds.append(pred)
+
+    df[answer_name + "_detection_score"] = scores
+    df[answer_name + "_detection_prediction"] = preds
+    return df
+
+# --- Binoculars ---
+def run_llama_as_detector(df, answer_name):
+    if "llama" not in MODEL_CACHE:
+        print(f"[Llama] Loading models on {DEVICE}...")
+        llama = LlamaInterface()
+        MODEL_CACHE["llama"] = llama
+    else:
+        llama = MODEL_CACHE["llama"]
+
+    scores, preds = [], []
+    for text in df[answer_name]:
+        score_prompt = f"Reply ONLY with a probability (e.g: '0.65') that the following text was AI generated:\n\n\n{text}"
+        score = llama.prompt(score_prompt)
+        pred_prompt = f"A detection model has assigned this answer a {score * 100}% chance of being AI generated, based on this score and your own judgement, evaluate whether the following text is AI generated, make sure to reply ONLY with 'human' or 'ai':\n\n\n{text}"
+        pred = llama.prompt(pred_prompt)
         scores.append(score)
         preds.append(pred)
 
