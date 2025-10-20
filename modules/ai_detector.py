@@ -5,6 +5,7 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification, Auto
 import torch
 import pandas as pd
 import numpy as np
+import re
 
 # Global model/ tokenizer cache
 MODEL_CACHE = {}
@@ -57,7 +58,7 @@ def run_binoculars(df, answer_name):
     df[answer_name + "_detection_prediction"] = preds
     return df
 
-# --- Binoculars ---
+# --- Llama ---
 def run_llama_as_detector(df, answer_name):
     if "llama" not in MODEL_CACHE:
         print(f"[Llama] Loading models on {DEVICE}...")
@@ -68,13 +69,30 @@ def run_llama_as_detector(df, answer_name):
 
     scores, preds = [], []
     for text in df[answer_name]:
-        score_prompt = f"Reply ONLY with a probability (e.g: '0.65') that the following text was AI generated:\n\n\n{text}"
-        score = llama.prompt(score_prompt)
-        print(f"Score: {score}")
-        pred_prompt = f"A detection model has assigned this answer a {score * 100}% chance of being AI generated, based on this score and your own judgement, evaluate whether the following text is AI generated, make sure to reply ONLY with 'human' or 'ai':\n\n\n{text}"
-        pred = llama.prompt(pred_prompt)
-        scores.append(score["choices"][0]["text"].strip())
-        preds.append(pred["choices"][0]["text"].strip())
+        score_prompt = f"Reply ONLY with a probability (e.g: '0.651') that the following text was AI generated:\n\n\n{text}"
+        score_resp = llama.prompt(score_prompt)
+        print(f"Score: {score_resp}")
+
+        score_text = score_resp["choices"][0]["text"].strip()
+        score_val = float(score_text) # plsplsplsplspls work
+        
+        match = re.search(r"(\d*\.\d+|\d+)", score_text)
+        if match:
+            score_val = float(match.group(1))
+        else:
+            score_val = 0.5
+        
+        pred_prompt = (
+            f"A detection model has assigned this answer a {score_val * 100:.2f}% chance of being AI generated. "
+            f"Based on this score and your own judgement, evaluate whether the following text is AI generated. "
+            f"Reply ONLY with 'human' or 'ai':\n\n\n{text}"
+        )
+
+        pred_resp = llama.prompt(pred_prompt)
+        pred_text = pred_resp["choices"][0]["text"].strip()
+
+        scores.append(score_val)
+        preds.append(pred_text)
 
     df[answer_name + "_detection_score"] = scores
     df[answer_name + "_detection_prediction"] = preds
