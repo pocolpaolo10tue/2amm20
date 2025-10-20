@@ -22,7 +22,7 @@ def main():
     df = clean_dataset(df, NUMBER_OF_QUESTIONS, MIN_LENGTH_ANSWER, MAX_LENGTH_QUESTION)
 
     print("=== Generating AI answers ===")
-    df = generate_ai_answers(df, AI_MODEL_NAME, "question", repeat_penalty=1.6)
+    df = generate_ai_answers(df, AI_MODEL_NAME, "question")
     
     print("=== Running AI detector on human text ===")
     df = run_ai_detector(AI_DETECTOR_NAME, df, "answer")
@@ -34,7 +34,7 @@ def main():
     df = create_question_with_prompt(df, prompt)
     
     print("=== Generating AI answer for question with prompt ===")
-    df = generate_ai_answers(df, AI_MODEL_NAME, "question_with_prompt", repeat_penalty=1.6)
+    df = generate_ai_answers(df, AI_MODEL_NAME, "question_with_prompt")
     
     print("=== Running AI detector for answer to question with prompt ===")
     df = run_ai_detector(AI_DETECTOR_NAME, df, "question_with_prompt_answer_ai")
