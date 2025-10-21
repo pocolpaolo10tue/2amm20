@@ -9,7 +9,7 @@ class LlamaInterface:
                  filename="Llama-3.3-70B-Instruct-Q3_K_L.gguf",
                  n_gpu_layers=-1,
                  n_batch=512,
-                 n_ctx=2048):
+                 n_ctx=8192):
         """Initialize Llama model for local inference (Python 3.9-safe)."""
         device = "cuda" if torch.cuda.is_available() else "cpu"
 
