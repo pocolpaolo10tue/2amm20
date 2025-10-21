@@ -90,7 +90,7 @@ def run_llama_as_detector(df, answer_name):
         pred_prompt = (
             f"A detection model has assigned this answer a {score_val * 100:.2f}% chance of being AI generated. "
             f"Based on this score and your own judgement, evaluate whether the following text is AI generated. "
-            f"Reply ONLY with 'human' or 'ai':\n\n\n{text}"
+            f"Reply ONLY with 'human' or 'ai':\n\n\n{text[:1500]}"
         )
 
         pred_resp = llama.prompt(pred_prompt)
