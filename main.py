@@ -5,10 +5,10 @@ from modules.ai_detector import run_ai_detector
 import multiprocessing as mp
 
 DATASET_NAME = "stackexchange_QA.parquet"
-PROMPT_FILE = "overall_prompt.csv"
+PROMPT_FILE = "final_prompt.csv"
 
 AI_MODEL_NAME = "llama"
-AI_DETECTOR_NAME = "llama"
+AI_DETECTOR_NAME = "binoculars"
 
 NUMBER_OF_QUESTIONS = 100
 MIN_LENGTH_ANSWER = 100
@@ -25,7 +25,7 @@ def main():
     df = run_ai_detector(AI_DETECTOR_NAME, df, "answer")
     
     print("=== Generating AI answers ===")
-    df = generate_ai_answers(df, AI_MODEL_NAME, "question")
+    df = generate_ai_answers(df, AI_MODEL_NAME, "question", repeat_penalty=1.6)
     
     print("=== Running AI detector on AI generated text ===")
     df = run_ai_detector(AI_DETECTOR_NAME, df, "question_answer_ai")
@@ -34,7 +34,7 @@ def main():
     df = create_question_with_prompt(df, prompt)
     
     print("=== Generating AI answer for question with prompt ===")
-    df = generate_ai_answers(df, AI_MODEL_NAME, "question_with_prompt")
+    df = generate_ai_answers(df, AI_MODEL_NAME, "question_with_prompt", repeat_penalty=1.6)
     
     print("=== Running AI detector for answer to question with prompt ===")
     df = run_ai_detector(AI_DETECTOR_NAME, df, "question_with_prompt_answer_ai")
