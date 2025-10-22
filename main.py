@@ -5,12 +5,12 @@ from modules.ai_detector import run_ai_detector
 import multiprocessing as mp
 
 DATASET_NAME = "stackexchange_QA.parquet"
-PROMPT_FILE = "final_prompt.csv"
+PROMPT_FILE = "overall_prompt.csv"
 
 AI_MODEL_NAME = "llama"
-AI_DETECTOR_NAME = "binoculars"
+AI_DETECTOR_NAME = "llama"
 
-NUMBER_OF_QUESTIONS = 100
+NUMBER_OF_QUESTIONS = 50
 MIN_LENGTH_ANSWER = 100
 MAX_LENGTH_QUESTION = 1000
 
