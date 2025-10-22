@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=reppen-final
+#SBATCH --job-name=final
 #SBATCH --output=%x_%j.out
 #SBATCH --nodes=1
 #SBATCH --gpus=1
